@@ -229,14 +229,14 @@ def create_table(rows, dict):
 		observe_datetime = datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")
 		rowstr = mask_begin.format(observe_datetime.year, observe_datetime.month - 1, observe_datetime.day, observe_datetime.hour, observe_datetime.minute, observe_datetime.second)
 		for i in range(1, len(dict) + 1):
-			rowstr += mask_middle.format(str(row[i]))
+			rowstr += mask_middle.format(str(row[i]).replace('None','null'))
 		chart_table += rowstr + mask_end + new_row
 
 	row=rows[-1]
 	observe_datetime = datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")
 	rowstr = mask_begin.format(observe_datetime.year, observe_datetime.month - 1, observe_datetime.day, observe_datetime.hour, observe_datetime.minute, observe_datetime.second)
 	for i in range(1, len(dict)+1):
-		rowstr += mask_middle.format(str(row[i]))
+		rowstr += mask_middle.format(str(row[i]).replace('None','null'))
 	chart_table += rowstr + mask_end
 
 	return chart_table
@@ -278,6 +278,7 @@ def print_graph_script(table, dict, documentid):
 	  curveType: 'function',
 	  width:900,
 	  height:500,
+	  interpolateNulls:true,
         series: {
           // Gives each series an axis name that matches the Y-axis below.  
 		  """
@@ -679,14 +680,14 @@ def main():
 	# get data from the database
 	records=get_data(option, selected_legend, inverter_list)
 	
-	table_total = None
+	table = None
 
 	if len(records) != 0:
 		 #convert the data into a table
-		table_total = create_table(records, selected_legend)
+		table = create_table(records, selected_legend)
 
-	if table_total != None:
-		print_graph_script(table_total, selected_legend, "chart_div")
+	if table != None:
+		print_graph_script(table, selected_legend, "chart_div")
 
 	print "</head>"
 
@@ -697,7 +698,7 @@ def main():
 	print_form_checkbox(selected_legend)
 	print_form_end(option)
 
-	if table_total != None:
+	if table != None:
 		show_graph("chart_div")
 		show_stats(option, selected_legend)
 	else:
