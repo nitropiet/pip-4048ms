@@ -24,7 +24,10 @@ def cgiFieldStorageToDict( fieldStorage ):
 	return params
 
 def getTZOffsetFromParams(_params):
-	return _params['tz_offset']
+	try:
+		return _params['tz_offset']
+	except Exception, e1:
+		return 0
 		
 
 # print the HTML head section
